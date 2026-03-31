@@ -18,6 +18,8 @@
       --accent-lt: #e8ede9;
       --warn: #7a3928;
       --warn-lt: #f5ece8;
+      --ok: #1e4d38;
+      --ok-lt: #eaf2ee;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,11 +48,7 @@
     .page-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; margin-bottom: 1.5rem; }
     .page-header h1 { font-size: 28px; line-height: 1.1; margin-bottom: 0.35rem; }
     .page-header p { color: var(--muted); }
-    .action-link {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-    }
+    .action-link { color: var(--accent); text-decoration: none; font-weight: 600; }
     .action-link:hover { text-decoration: underline; }
 
     .summary-grid {
@@ -68,12 +66,58 @@
     .summary-label { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
     .summary-value { font-family: 'DM Mono', monospace; font-size: 26px; }
 
-    .table-card {
+    .board, .table-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
       overflow: hidden;
+      margin-bottom: 1.25rem;
     }
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.8rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--faint);
+      background: #eceae4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+    }
+    .priority-list { padding: 0.4rem 1.2rem 1rem; }
+    .priority-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0.9rem;
+      align-items: center;
+      padding: 0.95rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .priority-item:last-child { border-bottom: none; }
+    .priority-rank {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #16271f;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+    }
+    .priority-title { font-weight: 600; margin-bottom: 0.15rem; }
+    .priority-sub { color: var(--muted); font-size: 12px; }
+    .priority-note { color: var(--muted); font-size: 12px; margin-top: 0.2rem; max-width: 360px; }
+    .priority-right { text-align: right; }
+    .priority-prob { font-family: 'DM Mono', monospace; font-size: 19px; margin-bottom: 0.25rem; }
+
     table { width: 100%; border-collapse: collapse; }
     th, td {
       padding: 0.9rem 1rem;
@@ -102,10 +146,12 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    .pill.high { color: var(--warn); background: var(--warn-lt); border-color: #e0b8a8; }
-    .pill.low { color: var(--accent); background: var(--accent-lt); border-color: #c4d8ce; }
-    .risk-list { display: flex; flex-direction: column; gap: 0.25rem; color: var(--muted); }
+    .pill.critical, .pill.high { color: var(--warn); background: var(--warn-lt); border-color: #e0b8a8; }
+    .pill.medium { color: #8b6a17; background: #f8f0d7; border-color: #e7d7a8; }
+    .pill.low { color: var(--ok); background: var(--ok-lt); border-color: #a8c9b8; }
+    .risk-list, .shap-list { display: flex; flex-direction: column; gap: 0.25rem; color: var(--muted); }
     .risk-list span::before { content: "- "; }
+    .shap-list span::before { content: "* "; }
   </style>
 </head>
 <body>
@@ -147,15 +193,39 @@
     </div>
   </div>
 
+  <div class="board">
+    <div class="section-head">
+      <span class="section-tag">QUEUE</span>
+      <h2>Ranked Priority List</h2>
+    </div>
+    <div class="priority-list">
+      {% for item in top_priority %}
+      <div class="priority-item">
+        <div class="priority-rank">#{{ item.priority_rank }}</div>
+        <div>
+          <div class="priority-title">{{ item.employee_name }}</div>
+          <div class="priority-sub">{{ item.department }} · {{ item.job_role }}</div>
+          <div class="priority-note">{{ item.priority_note }}</div>
+        </div>
+        <div class="priority-right">
+          <div class="priority-prob">{{ item.probability }}%</div>
+          <span class="pill {{ item.priority_label|lower }}">{{ item.priority_label }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
   <div class="table-card">
     <table>
       <thead>
         <tr>
           <th>Employee</th>
           <th>Department / Role</th>
-          <th>Risk</th>
+          <th>Priority</th>
           <th>Probability</th>
           <th>Top Signals</th>
+          <th>SHAP Drivers</th>
         </tr>
       </thead>
       <tbody>
@@ -163,15 +233,14 @@
         <tr>
           <td>
             <div class="employee-name">{{ item.employee_name }}</div>
+            <div class="employee-meta">Rank #{{ item.priority_rank }}</div>
           </td>
           <td>
             <div>{{ item.department }}</div>
             <div class="employee-meta">{{ item.job_role }}</div>
           </td>
           <td>
-            <span class="pill {% if item.will_leave %}high{% else %}low{% endif %}">
-              {% if item.will_leave %}High Risk{% else %}Low Risk{% endif %}
-            </span>
+            <span class="pill {{ item.priority_label|lower }}">{{ item.priority_label }}</span>
           </td>
           <td>{{ item.probability }}%</td>
           <td>
@@ -183,6 +252,19 @@
             </div>
             {% else %}
             <span class="employee-meta">No major risk signals detected.</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if item.shap_highlights %}
+            <div class="shap-list">
+              {% for factor in item.shap_highlights %}
+              <span>{{ factor.feature }} {{ factor.direction }} risk</span>
+              {% endfor %}
+            </div>
+            {% elif item.shap_notice %}
+            <span class="employee-meta">{{ item.shap_notice }}</span>
+            {% else %}
+            <span class="employee-meta">No SHAP drivers available.</span>
             {% endif %}
           </td>
         </tr>

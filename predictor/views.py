@@ -6,6 +6,11 @@ import pandas as pd
 from django.http import FileResponse, Http404
 from django.shortcuts import render
 
+try:
+    import shap
+except ImportError:
+    shap = None
+
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL = joblib.load(os.path.join(BASE, 'ml_model', 'attrition_model.pkl'))
 ENCODERS = joblib.load(os.path.join(BASE, 'ml_model', 'label_encoders.pkl'))
@@ -46,6 +51,29 @@ CSV_COLUMNS = [
     'JobLevel',
 ]
 
+FEATURE_LABELS = {
+    'Age': 'Age',
+    'Gender': 'Gender',
+    'Department': 'Department',
+    'JobRole': 'Job Role',
+    'BusinessTravel': 'Business Travel',
+    'EducationField': 'Education Field',
+    'MaritalStatus': 'Marital Status',
+    'OverTime': 'Overtime',
+    'MonthlyIncome': 'Monthly Income',
+    'JobSatisfaction': 'Job Satisfaction',
+    'EnvironmentSatisfaction': 'Environment Satisfaction',
+    'WorkLifeBalance': 'Work-Life Balance',
+    'YearsAtCompany': 'Years at Company',
+    'YearsInCurrentRole': 'Years in Current Role',
+    'YearsSinceLastPromotion': 'Years Since Last Promotion',
+    'NumCompaniesWorked': 'Companies Worked',
+    'DistanceFromHome': 'Distance From Home',
+    'PercentSalaryHike': 'Percent Salary Hike',
+    'TrainingTimesLastYear': 'Training Sessions Last Year',
+    'JobLevel': 'Job Level',
+}
+
 
 def collect_risk_factors(raw):
     risks = []
@@ -62,6 +90,16 @@ def collect_risk_factors(raw):
     if raw['DistanceFromHome'] > 20:
         risks.append('Long commutes increase the likelihood of leaving.')
     return risks[:3]
+
+
+def priority_details(probability):
+    if probability >= 65:
+        return 'Critical', 'Immediate outreach recommended within 24 hours.'
+    if probability >= 45:
+        return 'High', 'Manager and HR review should be scheduled this week.'
+    if probability >= 25:
+        return 'Medium', 'Monitor closely and review workload, growth, and engagement.'
+    return 'Low', 'No urgent intervention required. Continue routine engagement.'
 
 
 def build_raw_input(source):
@@ -96,7 +134,41 @@ def predict_attrition(raw):
     feat_vector = pd.DataFrame([[encoded[f] for f in FEATURES]], columns=FEATURES)
     prediction = int(MODEL.predict(feat_vector)[0])
     probability = round(float(MODEL.predict_proba(feat_vector)[0][1]) * 100, 1)
-    return prediction, probability
+    return prediction, probability, feat_vector
+
+
+def build_shap_explanations(raw, feat_vector):
+    if shap is None:
+        return [], 'Install the SHAP package to render per-employee model explanations.'
+
+    try:
+        explainer = shap.TreeExplainer(MODEL)
+        shap_values = explainer.shap_values(feat_vector)
+        if isinstance(shap_values, list):
+            values = shap_values[1][0]
+        elif len(getattr(shap_values, 'shape', [])) == 3:
+            values = shap_values[0, :, 1]
+        else:
+            values = shap_values[0]
+
+        explanations = []
+        for feature_name, shap_value in zip(FEATURES, values):
+            magnitude = abs(float(shap_value))
+            if magnitude == 0:
+                continue
+
+            direction = 'increases' if shap_value > 0 else 'reduces'
+            explanations.append({
+                'feature': FEATURE_LABELS.get(feature_name, feature_name),
+                'raw_value': raw[feature_name],
+                'direction': direction,
+                'impact': round(magnitude, 4),
+            })
+
+        explanations.sort(key=lambda item: item['impact'], reverse=True)
+        return explanations[:5], None
+    except Exception as exc:
+        return [], f'SHAP explanation could not be generated: {exc}'
 
 
 def validate_csv_columns(fieldnames):
@@ -118,11 +190,17 @@ def process_batch_upload(uploaded_file):
         employee_name = (row.get('EmployeeName') or '').strip() or f'Employee {index}'
         try:
             raw = build_raw_input(row)
-            prediction, probability = predict_attrition(raw)
+            prediction, probability, feat_vector = predict_attrition(raw)
+            shap_highlights, shap_notice = build_shap_explanations(raw, feat_vector)
         except Exception as exc:
             raise ValueError(f'Row {index} for {employee_name}: {exc}') from exc
 
+        priority_label, priority_note = priority_details(probability)
+
         results.append({
+            'priority_rank': 0,
+            'priority_label': priority_label,
+            'priority_note': priority_note,
             'employee_name': employee_name,
             'department': raw['Department'],
             'job_role': raw['JobRole'],
@@ -130,15 +208,22 @@ def process_batch_upload(uploaded_file):
             'probability': probability,
             'will_leave': prediction == 1,
             'risk_factors': collect_risk_factors(raw),
+            'shap_highlights': shap_highlights[:3],
+            'shap_notice': shap_notice,
         })
 
     if not results:
         raise ValueError('The uploaded CSV does not contain any employee rows.')
 
+    results.sort(key=lambda item: item['probability'], reverse=True)
+    for rank, item in enumerate(results, start=1):
+        item['priority_rank'] = rank
+
     high_risk_count = sum(1 for result in results if result['will_leave'])
     avg_probability = round(sum(result['probability'] for result in results) / len(results), 1)
 
     return {
+        'top_priority': results[:5],
         'results': results,
         'summary': {
             'total_employees': len(results),
@@ -174,13 +259,19 @@ def index(request):
             return render(request, 'predictor/batch_result.html', batch_context)
 
         raw = build_raw_input(request.POST)
-        prediction, probability = predict_attrition(raw)
+        prediction, probability, feat_vector = predict_attrition(raw)
         risks = collect_risk_factors(raw)
+        shap_explanations, shap_notice = build_shap_explanations(raw, feat_vector)
+        priority_label, priority_note = priority_details(probability)
         return render(request, 'predictor/result.html', {
             'prediction': prediction,
             'probability': probability,
             'will_leave': prediction == 1,
             'risk_factors': risks,
+            'priority_label': priority_label,
+            'priority_note': priority_note,
+            'shap_explanations': shap_explanations,
+            'shap_notice': shap_notice,
             'employee_name': request.POST.get('EmployeeName', 'Employee'),
             'form_data': raw,
             'choices': CHOICES,

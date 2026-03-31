@@ -113,6 +113,28 @@
     .verdict-banner.leave .prob-bar-fill { background: #b85c3a; }
     .verdict-banner.stay  .prob-bar-fill { background: #4a8a70; }
     .prob-caption { font-size: 10.5px; color: var(--faint); font-style: italic; }
+    .priority-strip {
+      margin-top: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+    .priority-pill {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 10.5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .priority-pill.critical,
+    .priority-pill.high { color: var(--warn); background: var(--warn-lt); border-color: #e0b8a8; }
+    .priority-pill.medium { color: #8b6a17; background: #f8f0d7; border-color: #e7d7a8; }
+    .priority-pill.low { color: var(--ok); background: var(--ok-lt); border-color: #a8c9b8; }
+    .priority-note { font-size: 12px; color: var(--muted); }
 
     /* ── MAIN GRID ── */
     .result-grid {
@@ -197,6 +219,30 @@
       flex-shrink: 0;
       margin-top: 1px;
     }
+    .shap-list { display: flex; flex-direction: column; gap: 0.65rem; }
+    .shap-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      padding: 0.8rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+    }
+    .shap-item-title { font-size: 12.5px; font-weight: 600; margin-bottom: 0.15rem; }
+    .shap-item-meta { font-size: 12px; color: var(--muted); }
+    .shap-direction {
+      font-family: 'DM Mono', monospace;
+      font-size: 10.5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      align-self: start;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .shap-direction.up { color: var(--warn); background: var(--warn-lt); }
+    .shap-direction.down { color: var(--ok); background: var(--ok-lt); }
+    .shap-note { font-size: 12.5px; color: var(--muted); }
 
     /* ── PROFILE SUMMARY (sidebar card) ── */
     .profile-row {
@@ -277,6 +323,10 @@
           This employee is likely to remain. Continue standard engagement practices.
         {% endif %}
       </div>
+      <div class="priority-strip">
+        <span class="priority-pill {{ priority_label|lower }}">{{ priority_label }} Priority</span>
+        <span class="priority-note">{{ priority_note }}</span>
+      </div>
     </div>
     <div class="prob-block">
       <div class="prob-number">{{ probability }}<span style="font-size:20px;opacity:0.6;">%</span></div>
@@ -347,6 +397,34 @@
         </div>
       </div>
       {% endif %}
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">SHAP</span>
+          <h3>Top Model Drivers</h3>
+        </div>
+        <div class="card-body">
+          {% if shap_explanations %}
+          <div class="shap-list">
+            {% for item in shap_explanations %}
+            <div class="shap-item">
+              <div>
+                <div class="shap-item-title">{{ item.feature }}</div>
+                <div class="shap-item-meta">Current value: {{ item.raw_value }}</div>
+              </div>
+              <div class="shap-direction {% if item.direction == 'increases' %}up{% else %}down{% endif %}">
+                {{ item.direction }} risk
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% elif shap_notice %}
+          <div class="shap-note">{{ shap_notice }}</div>
+          {% else %}
+          <div class="shap-note">No SHAP explanation is available for this prediction.</div>
+          {% endif %}
+        </div>
+      </div>
 
       <div class="actions">
         <a href="/" class="btn-primary">← New Prediction</a>
