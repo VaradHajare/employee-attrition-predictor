@@ -3,26 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Attrition Predictor - MazeQube HR Analytics</title>
+  <title>Attrition Predictor — MazeQube HR Analytics</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f5f4f0;
-      --surface: #fdfcfa;
-      --border: #ddd9d0;
+      --bg:        #f5f4f0;
+      --surface:   #fdfcfa;
+      --border:    #ddd9d0;
       --border-md: #ccc8be;
-      --text: #1c1a17;
-      --muted: #6b6760;
-      --faint: #a09d97;
-      --accent: #2c4a3e;
+      --text:      #1c1a17;
+      --muted:     #6b6760;
+      --faint:     #a09d97;
+      --accent:    #2c4a3e;
       --accent-lt: #e8ede9;
-      --warn: #7a3928;
-      --warn-lt: #f5ece8;
-      --tag-bg: #eceae4;
+      --warn:      #7a3928;
+      --warn-lt:   #f5ece8;
+      --tag-bg:    #eceae4;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
@@ -45,15 +46,6 @@
     .topbar-logo { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: #fff; letter-spacing: 0.05em; }
     .topbar-sep { width: 1px; height: 18px; background: #3a3835; }
     .topbar-title { font-size: 13px; color: #9c9890; }
-    .topbar-link {
-      color: #d7d3ca;
-      text-decoration: none;
-      font-size: 12px;
-      border: 1px solid #3a3835;
-      padding: 5px 10px;
-      border-radius: 4px;
-    }
-    .topbar-link:hover { color: #fff; border-color: #6b6760; }
     .topbar-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: #2c4a3e; color: #a8c5bb; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.04em; }
 
     .page {
@@ -81,6 +73,7 @@
       margin-top: 1.25rem;
     }
     .sidebar-heading:first-child { margin-top: 0; }
+
     .info-row {
       display: flex;
       justify-content: space-between;
@@ -90,7 +83,9 @@
     }
     .info-label { color: var(--muted); }
     .info-val { font-weight: 500; font-family: 'DM Mono', monospace; font-size: 11.5px; }
+
     .sidebar-rule { border: none; border-top: 1px solid var(--border); margin: 1.1rem 0; }
+
     .model-stat {
       background: var(--accent-lt);
       border: 1px solid #c4d8ce;
@@ -100,71 +95,35 @@
     }
     .model-stat-label { font-size: 10.5px; color: #4a7a68; font-weight: 500; margin-bottom: 1px; }
     .model-stat-val { font-family: 'DM Mono', monospace; font-size: 17px; font-weight: 500; color: var(--accent); }
+
     .risk-key { display: flex; flex-direction: column; gap: 0.35rem; }
     .risk-key-item { display: flex; align-items: center; gap: 0.5rem; font-size: 11.5px; color: var(--muted); }
     .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
     .dot-warn { background: #b85c3a; }
-    .dot-ok { background: #4a8a70; }
-    .dot-mid { background: #c4a43a; }
+    .dot-ok   { background: #4a8a70; }
+    .dot-mid  { background: #c4a43a; }
 
-    .main { padding: 2.25rem 2.75rem; max-width: 920px; }
-    .page-header-row {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-    }
+    .main { padding: 2.25rem 2.75rem; max-width: 820px; }
+
+    .page-header { margin-bottom: 1.75rem; }
     .page-header h1 { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.2rem; }
     .page-header p { font-size: 13px; color: var(--muted); }
-    .page-link { color: var(--accent); text-decoration: none; font-size: 12.5px; font-weight: 600; }
-    .page-link:hover { text-decoration: underline; }
 
-    .recent-card, .form-section {
+    .form-section {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 7px;
-      overflow: hidden;
       margin-bottom: 1.1rem;
+      overflow: hidden;
     }
-    .recent-header, .form-section-header {
+    .form-section-header {
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      justify-content: space-between;
       padding: 0.75rem 1.4rem;
       border-bottom: 1px solid var(--border);
       background: var(--bg);
     }
-    .recent-header h2, .form-section-header h2 { font-size: 13px; font-weight: 600; color: var(--text); }
-    .recent-list { padding: 0.2rem 1.4rem 1rem; }
-    .recent-item {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr auto auto;
-      gap: 0.75rem;
-      align-items: center;
-      padding: 0.85rem 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 12.5px;
-    }
-    .recent-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .recent-name { font-weight: 600; }
-    .recent-meta { color: var(--muted); }
-    .recent-pill {
-      font-family: 'DM Mono', monospace;
-      font-size: 10.5px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .recent-pill.high { color: var(--warn); background: var(--warn-lt); border-color: #e0b8a8; }
-    .recent-pill.low { color: var(--accent); background: var(--accent-lt); border-color: #c4d8ce; }
-    .recent-view { color: var(--accent); text-decoration: none; font-weight: 600; }
-    .recent-view:hover { text-decoration: underline; }
-    .recent-empty { padding: 1rem 1.4rem 1.1rem; font-size: 12.5px; color: var(--muted); }
-
     .section-num {
       font-family: 'DM Mono', monospace;
       font-size: 10.5px;
@@ -174,9 +133,12 @@
       padding: 2px 6px;
       border-radius: 3px;
     }
+    .form-section-header h2 { font-size: 13px; font-weight: 600; color: var(--text); }
     .form-section-body { padding: 1.4rem; }
+
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
     .field { display: flex; flex-direction: column; gap: 4px; }
     .field label { font-size: 11.5px; font-weight: 500; color: var(--muted); }
     .field label .risk-tag {
@@ -201,6 +163,7 @@
       font-size: 13px;
       color: var(--text);
       background: var(--surface);
+      transition: border-color 0.15s, box-shadow 0.15s;
       appearance: none;
       -webkit-appearance: none;
     }
@@ -215,9 +178,15 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(44,74,62,0.08);
     }
-    .warn-input, .warn-select { border-color: #c4866a; }
+    .warn-input { border-color: #c4866a; }
+    .warn-select { border-color: #c4866a; }
 
-    .rating-wrap { display: flex; border: 1px solid var(--border-md); border-radius: 5px; overflow: hidden; }
+    .rating-wrap {
+      display: flex;
+      border: 1px solid var(--border-md);
+      border-radius: 5px;
+      overflow: hidden;
+    }
     .rating-wrap input[type=radio] { display: none; }
     .rating-wrap label {
       flex: 1;
@@ -228,10 +197,13 @@
       color: var(--muted);
       cursor: pointer;
       border-right: 1px solid var(--border-md);
+      transition: background 0.1s, color 0.1s;
       background: var(--surface);
     }
     .rating-wrap label:last-of-type { border-right: none; }
     .rating-wrap input[type=radio]:checked + label { background: var(--accent); color: #fff; }
+    .rating-wrap label:hover { background: var(--accent-lt); color: var(--accent); }
+
     .rating-scale {
       display: flex;
       justify-content: space-between;
@@ -260,9 +232,12 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
     }
-    .submit-btn:hover { background: #1e3329; }
+    .submit-btn:hover { background: #1e3329; transform: translateY(-1px); }
+    .submit-btn:active { transform: translateY(0); }
     .submit-note { font-size: 12px; color: var(--faint); font-style: italic; }
+
     .error-box {
       background: var(--warn-lt);
       border: 1px solid #e0b8a8;
@@ -272,6 +247,7 @@
       font-size: 13px;
       margin-bottom: 1.1rem;
     }
+
     .footer {
       border-top: 1px solid var(--border);
       padding: 0.9rem 2rem;
@@ -289,21 +265,19 @@
   <div class="topbar-left">
     <span class="topbar-logo">MAZEQUBE</span>
     <div class="topbar-sep"></div>
-    <span class="topbar-title">HR Analytics - Employee Attrition Predictor</span>
+    <span class="topbar-title">HR Analytics — Employee Attrition Predictor</span>
   </div>
-  <div class="topbar-left">
-    <a href="/history/" class="topbar-link">View History</a>
-    <span class="topbar-badge">RF - v1.0</span>
-  </div>
+  <span class="topbar-badge">RF · v1.0</span>
 </div>
 
 <div class="page">
+
   <aside class="sidebar">
     <div class="sidebar-heading">Project Info</div>
     <div class="info-row"><span class="info-label">Student</span><span class="info-val">V. Hajare</span></div>
     <div class="info-row"><span class="info-label">Institute</span><span class="info-val">AISSMS COE</span></div>
     <div class="info-row"><span class="info-label">Company</span><span class="info-val">MazeQube</span></div>
-    <div class="info-row"><span class="info-label">Period</span><span class="info-val">Jan-Apr 2026</span></div>
+    <div class="info-row"><span class="info-label">Period</span><span class="info-val">Jan–Apr 2026</span></div>
 
     <hr class="sidebar-rule">
     <div class="sidebar-heading">Model Performance</div>
@@ -324,48 +298,28 @@
     <div class="sidebar-heading">Key Risk Signals</div>
     <div class="risk-key">
       <div class="risk-key-item"><span class="dot dot-warn"></span>Overtime = Yes</div>
-      <div class="risk-key-item"><span class="dot dot-warn"></span>Income &lt; Rs. 4,000/mo</div>
+      <div class="risk-key-item"><span class="dot dot-warn"></span>Income &lt; ₹4,000/mo</div>
       <div class="risk-key-item"><span class="dot dot-mid"></span>Age &lt; 30 years</div>
       <div class="risk-key-item"><span class="dot dot-mid"></span>Tenure &lt; 3 years</div>
-      <div class="risk-key-item"><span class="dot dot-mid"></span>Job Satisfaction &lt;= 2</div>
+      <div class="risk-key-item"><span class="dot dot-mid"></span>Job Satisfaction ≤ 2</div>
       <div class="risk-key-item"><span class="dot dot-ok"></span>Distance &gt; 20 km</div>
     </div>
+
+    <hr class="sidebar-rule">
+    <div class="sidebar-heading">Dataset</div>
+    <div class="info-row"><span class="info-label">Source</span><span class="info-val">IBM HR</span></div>
+    <div class="info-row"><span class="info-label">Records</span><span class="info-val">1,470</span></div>
+    <div class="info-row"><span class="info-label">Features</span><span class="info-val">20 used</span></div>
   </aside>
 
   <main class="main">
-    <div class="page-header-row">
-      <div class="page-header">
-        <h1>New Prediction</h1>
-        <p>Complete all four sections to generate an employee attrition risk assessment.</p>
-      </div>
-      <a href="/history/" class="page-link">Open prediction history</a>
+    <div class="page-header">
+      <h1>New Prediction</h1>
+      <p>Complete all four sections to generate an employee attrition risk assessment.</p>
     </div>
 
     {% if error %}<div class="error-box">{{ error }}</div>{% endif %}
     {% if db_notice %}<div class="error-box">{{ db_notice }}</div>{% endif %}
-
-    <div class="recent-card">
-      <div class="recent-header">
-        <h2>Recent Attrition Records</h2>
-        <a href="/history/" class="page-link">See all</a>
-      </div>
-      {% if recent_predictions %}
-      <div class="recent-list">
-        {% for item in recent_predictions %}
-        <div class="recent-item">
-          <div class="recent-name">{{ item.employee_name }}</div>
-          <div class="recent-meta">{{ item.department }} · {{ item.job_role }}</div>
-          <div class="recent-pill {% if item.will_leave %}high{% else %}low{% endif %}">
-            {% if item.will_leave %}High Risk{% else %}Low Risk{% endif %}
-          </div>
-          <a href="/history/{{ item.id }}/" class="recent-view">View</a>
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <div class="recent-empty">No prediction records yet. Run a prediction to start building employee history.</div>
-      {% endif %}
-    </div>
 
     <form method="POST">
       {% csrf_token %}
@@ -390,13 +344,13 @@
       <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">02</span>
-          <h2>Role and Work Conditions</h2>
+          <h2>Role & Work Conditions</h2>
         </div>
         <div class="form-section-body">
           <div class="grid-2">
             <div class="field"><label>Department</label><select name="Department">{% for o in choices.Department %}<option>{{ o }}</option>{% endfor %}</select></div>
             <div class="field"><label>Job Role</label><select name="JobRole">{% for o in choices.JobRole %}<option>{{ o }}</option>{% endfor %}</select></div>
-            <div class="field"><label>Job Level <span style="color:var(--faint);font-weight:400;font-size:11px;">1 = Entry, 5 = Executive</span></label><input type="number" name="JobLevel" min="1" max="5" value="2"></div>
+            <div class="field"><label>Job Level &nbsp;<span style="color:var(--faint);font-weight:400;font-size:11px;">1 = Entry · 5 = Executive</span></label><input type="number" name="JobLevel" min="1" max="5" value="2"></div>
             <div class="field"><label>Business Travel</label><select name="BusinessTravel">{% for o in choices.BusinessTravel %}<option>{{ o }}</option>{% endfor %}</select></div>
             <div class="field"><label>OverTime <span class="risk-tag">HIGH RISK</span></label><select name="OverTime" class="warn-select">{% for o in choices.OverTime %}<option>{{ o }}</option>{% endfor %}</select></div>
             <div class="field"><label>Training Sessions (Last Year)</label><input type="number" name="TrainingTimesLastYear" min="0" max="7" value="3"></div>
@@ -407,11 +361,11 @@
       <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">03</span>
-          <h2>Compensation and Tenure</h2>
+          <h2>Compensation & Tenure</h2>
         </div>
         <div class="form-section-body">
           <div class="grid-3">
-            <div class="field"><label>Monthly Income (Rs.) <span class="risk-tag">HIGH RISK</span></label><input type="number" name="MonthlyIncome" min="1000" max="100000" value="5000" class="warn-input"></div>
+            <div class="field"><label>Monthly Income (₹) <span class="risk-tag">HIGH RISK</span></label><input type="number" name="MonthlyIncome" min="1000" max="100000" value="5000" class="warn-input"></div>
             <div class="field"><label>% Salary Hike</label><input type="number" name="PercentSalaryHike" min="11" max="25" value="13"></div>
             <div class="field"><label>Companies Worked Previously</label><input type="number" name="NumCompaniesWorked" min="0" max="10" value="2"></div>
             <div class="field"><label>Years at Company</label><input type="number" name="YearsAtCompany" min="0" max="40" value="5"></div>
@@ -448,16 +402,17 @@
       </div>
 
       <div class="submit-row">
-        <button type="submit" class="submit-btn">Run Prediction</button>
-        <span class="submit-note">Each prediction is saved to your attrition history in PostgreSQL.</span>
+        <button type="submit" class="submit-btn">Run Prediction →</button>
+        <span class="submit-note">Model returns a risk score and top contributing factors.</span>
       </div>
     </form>
   </main>
+
 </div>
 
 <div class="footer">
   <span>Employee Attrition Prediction System · MazeQube Internship Project · Varad Vijay Hajare, AISSMS COE Pune</span>
-  <span>AY 2025-26</span>
+  <span>AY 2025–26</span>
 </div>
 
 </body>

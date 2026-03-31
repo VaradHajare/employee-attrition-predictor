@@ -116,23 +116,17 @@ This repository includes:
 1. Push the latest code to GitHub.
 2. In Railway, create a new project and choose `Deploy from GitHub repo`.
 3. Select this repository.
-4. Add a PostgreSQL service to the Railway project.
-5. In your app service variables, set:
+4. Set these app service variables:
 
 ```text
 SECRET_KEY=your-secure-secret-key
 DEBUG=False
 ALLOWED_HOSTS=.railway.app
 CSRF_TRUSTED_ORIGINS=https://<your-app-domain>.railway.app
-PGDATABASE=${{Postgres.PGDATABASE}}
-PGUSER=${{Postgres.PGUSER}}
-PGPASSWORD=${{Postgres.PGPASSWORD}}
-PGHOST=${{Postgres.PGHOST}}
-PGPORT=${{Postgres.PGPORT}}
 ```
 
-6. Deploy the service.
-7. In Railway Networking, generate a public domain for the app.
+5. Deploy the service.
+6. In Railway Networking, generate a public domain for the app.
 
 Before deploying predictions, make sure the model files are available in the deployment environment.
 
@@ -145,11 +139,6 @@ The prediction view depends on these files:
 - `ml_model/feature_columns.pkl`
 
 These files are ignored by Git right now, so Railway will not receive them from GitHub unless you change that workflow.
-
-You have two practical options:
-
-- commit the model files to the repository if you are okay storing them in GitHub
-- provide them another way in production, such as a mounted volume or startup download step
 
 ## Notes
 
