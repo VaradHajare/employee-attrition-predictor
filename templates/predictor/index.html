@@ -46,17 +46,6 @@
     .topbar-logo { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: #fff; letter-spacing: 0.05em; }
     .topbar-sep { width: 1px; height: 18px; background: #3a3835; }
     .topbar-title { font-size: 13px; color: #9c9890; }
-    .topbar-nav { display: flex; align-items: center; gap: 0.6rem; }
-    .topbar-link {
-      color: #d7d3ca;
-      text-decoration: none;
-      font-size: 12px;
-      border: 1px solid #3a3835;
-      padding: 5px 10px;
-      border-radius: 999px;
-      transition: border-color 0.15s, color 0.15s, background 0.15s;
-    }
-    .topbar-link:hover { color: #fff; border-color: #6b6760; background: rgba(255,255,255,0.04); }
     .topbar-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: #2c4a3e; color: #a8c5bb; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.04em; }
 
     .page {
@@ -119,37 +108,6 @@
     .page-header { margin-bottom: 1.75rem; }
     .page-header h1 { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.2rem; }
     .page-header p { font-size: 13px; color: var(--muted); }
-    .quick-nav {
-      position: sticky;
-      top: 16px;
-      z-index: 3;
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
-      padding: 0.8rem 0.9rem;
-      background: rgba(253, 252, 250, 0.92);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-    }
-    .quick-nav-link {
-      text-decoration: none;
-      color: var(--text);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
-      transition: border-color 0.15s, color 0.15s, background 0.15s;
-    }
-    .quick-nav-link:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: #f1f6f3;
-    }
-
     .form-section {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -430,10 +388,9 @@
         align-items: flex-start;
         gap: 0.8rem;
       }
-      .topbar-left, .topbar-nav { flex-wrap: wrap; gap: 0.75rem; }
+      .topbar-left { flex-wrap: wrap; gap: 0.75rem; }
       .main { padding: 1.25rem 1rem 2rem; }
       .grid-2, .grid-3 { grid-template-columns: 1fr; }
-      .quick-nav { top: 8px; }
     }
 
     .footer {
@@ -447,7 +404,7 @@
     }
   </style>
 </head>
-<body id="page-top">
+<body>
 
 <div class="topbar">
   <div class="topbar-left">
@@ -455,12 +412,7 @@
     <div class="topbar-sep"></div>
     <span class="topbar-title">Employee Attrition Predictor</span>
   </div>
-  <div class="topbar-nav">
-    <a href="#batch-upload" class="topbar-link">Batch Upload</a>
-    <a href="/sample-csv/" class="topbar-link">Sample CSV</a>
-    <a href="#single-form" class="topbar-link">Single Employee</a>
-    <span class="topbar-badge">RF · v1.0</span>
-  </div>
+  <span class="topbar-badge">RF · v1.0</span>
 </div>
 
 <div class="page">
@@ -511,19 +463,10 @@
       <p>Evaluate individual employees or batch uploads to identify attrition probability, key risk factors, and action priorities.</p>
       </div>
 
-    <div class="quick-nav">
-      <a href="#batch-upload" class="quick-nav-link">Batch Upload</a>
-      <a href="#section-personal" class="quick-nav-link">Personal Info</a>
-      <a href="#section-role" class="quick-nav-link">Role & Work</a>
-      <a href="#section-compensation" class="quick-nav-link">Compensation</a>
-      <a href="#section-satisfaction" class="quick-nav-link">Ratings</a>
-      <a href="#page-top" class="quick-nav-link">Back to Top</a>
-    </div>
-
     {% if error %}<div class="error-box">{{ error }}</div>{% endif %}
     {% if db_notice %}<div class="error-box">{{ db_notice }}</div>{% endif %}
 
-    <div class="upload-panel" id="batch-upload">
+    <div class="upload-panel">
       <div class="upload-header">
         <div>
           <h2>Group CSV Prediction</h2>
@@ -548,10 +491,10 @@
       </form>
     </div>
 
-    <form method="POST" id="single-form">
+    <form method="POST">
       {% csrf_token %}
 
-      <div class="form-section" id="section-personal">
+      <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">01</span>
           <h2>Personal Information</h2>
@@ -568,7 +511,7 @@
         </div>
       </div>
 
-      <div class="form-section" id="section-role">
+      <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">02</span>
           <h2>Role & Work Conditions</h2>
@@ -585,7 +528,7 @@
         </div>
       </div>
 
-      <div class="form-section" id="section-compensation">
+      <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">03</span>
           <h2>Compensation & Tenure</h2>
@@ -602,7 +545,7 @@
         </div>
       </div>
 
-      <div class="form-section" id="section-satisfaction">
+      <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">04</span>
           <h2>Satisfaction Ratings</h2>
