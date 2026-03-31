@@ -108,27 +108,26 @@ Current Python dependencies are listed in `requirements.txt`:
 
 This repository includes:
 
-- `Procfile` for process startup
-- `railway.toml` for Railway deployment configuration
+- `vercel.json` for Vercel routing and function configuration
+- `api/index.py` as the Vercel Python entrypoint
 
-### Deploying on Railway
+### Deploying on Vercel
 
 1. Push the latest code to GitHub.
-2. In Railway, create a new project and choose `Deploy from GitHub repo`.
-3. Select this repository.
-4. Set these app service variables:
+2. In Vercel, create a new project and import this repository.
+3. Keep the detected framework as `Other` if prompted.
+4. Set these environment variables in Vercel:
 
 ```text
 SECRET_KEY=your-secure-secret-key
 DEBUG=False
-ALLOWED_HOSTS=.railway.app
-CSRF_TRUSTED_ORIGINS=https://<your-app-domain>.railway.app
+ALLOWED_HOSTS=.vercel.app
+CSRF_TRUSTED_ORIGINS=https://<your-project>.vercel.app
 ```
 
-5. Deploy the service.
-6. In Railway Networking, generate a public domain for the app.
+5. Deploy the project.
 
-Before deploying predictions, make sure the model files are available in the deployment environment.
+Before deploying predictions, make sure the model files are available in the deployment bundle.
 
 ### Important Model File Note
 
@@ -138,7 +137,13 @@ The prediction view depends on these files:
 - `ml_model/label_encoders.pkl`
 - `ml_model/feature_columns.pkl`
 
-These files are ignored by Git right now, so Railway will not receive them from GitHub unless you change that workflow.
+These files are committed in this repository so Vercel can bundle them with the Python function.
+
+### Persistence Note
+
+This app is currently configured with SQLite only.
+
+Inference from Vercel's Functions docs: Vercel recommends persisting writes to object storage or another external database rather than relying on local function files, so SQLite should not be treated as a persistent production datastore on Vercel.
 
 ## Notes
 

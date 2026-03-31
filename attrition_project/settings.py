@@ -15,12 +15,12 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-varad-attrition-2026-mazeq
 DEBUG = env_bool('DEBUG', default=False)
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.railway.app').split(',')
+    for host in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.vercel.app').split(',')
     if host.strip()
 ]
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
-    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'https://*.railway.app').split(',')
+    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'https://*.vercel.app').split(',')
     if origin.strip()
 ]
 INSTALLED_APPS = [
@@ -40,7 +40,7 @@ MIDDLEWARE = [
 ]
 ROOT_URLCONF = 'attrition_project.urls'
 TEMPLATES = [{'BACKEND': 'django.template.backends.django.DjangoTemplates','DIRS': [BASE_DIR / 'templates'],'APP_DIRS': True,'OPTIONS': {'context_processors': ['django.template.context_processors.debug','django.template.context_processors.request','django.contrib.auth.context_processors.auth','django.contrib.messages.context_processors.messages']}}]
-WSGI_APPLICATION = 'attrition_project.wsgi.application'
+WSGI_APPLICATION = 'attrition_project.wsgi.app'
 DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3'}}
 
 LANGUAGE_CODE = 'en-us'

@@ -1,6 +1,0 @@
-[build]
-builder = "NIXPACKS"
-
-[deploy]
-preDeployCommand = "python manage.py migrate && python manage.py collectstatic --noinput"
-startCommand = "gunicorn attrition_project.wsgi:application --bind 0.0.0.0:$PORT"
