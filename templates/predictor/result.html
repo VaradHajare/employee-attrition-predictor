@@ -43,6 +43,17 @@
     .topbar-logo { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: #fff; letter-spacing: 0.05em; }
     .topbar-sep { width: 1px; height: 18px; background: #3a3835; }
     .topbar-title { font-size: 13px; color: #9c9890; }
+    .topbar-nav { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-link {
+      color: #c7c1b7;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+    .topbar-link:hover { color: #fff; border-color: #6b6760; background: rgba(255,255,255,0.04); }
     .topbar-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: #2c4a3e; color: #a8c5bb; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.04em; }
 
     /* ── LAYOUT ── */
@@ -298,7 +309,12 @@
     <div class="topbar-sep"></div>
     <span class="topbar-title">Prediction Result</span>
   </div>
-  <span class="topbar-badge">RF · v1.0</span>
+  <div class="topbar-nav">
+    <a href="/" class="topbar-link">New Prediction</a>
+    <a href="/#batch-upload" class="topbar-link">Batch Upload</a>
+    <a href="/sample-csv/" class="topbar-link">Sample CSV</a>
+    <span class="topbar-badge">RF · v1.0</span>
+  </div>
 </div>
 
 <div class="page">
