@@ -27,6 +27,7 @@
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
+      font-size: 15px;
       min-height: 100vh;
     }
     .topbar {
@@ -41,7 +42,7 @@
     .topbar-left { display: flex; align-items: center; gap: 1.5rem; }
     .topbar-logo { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: #fff; letter-spacing: 0.05em; text-decoration: none; }
     .topbar-sep { width: 1px; height: 18px; background: #3a3835; }
-    .topbar-title { font-size: 13px; color: #9c9890; }
+    .topbar-title { font-size: 14px; color: #9c9890; }
     .topbar-nav { display: flex; align-items: center; gap: 0.75rem; }
     .topbar-link {
       color: #d7d3ca;
@@ -56,8 +57,8 @@
 
     .page { max-width: 1180px; margin: 0 auto; padding: 2.5rem 2rem 3rem; }
     .page-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; margin-bottom: 1.5rem; }
-    .page-header h1 { font-size: 28px; line-height: 1.1; margin-bottom: 0.35rem; }
-    .page-header p { color: var(--muted); }
+    .page-header h1 { font-size: 30px; line-height: 1.1; margin-bottom: 0.35rem; }
+    .page-header p { color: var(--muted); font-size: 14px; }
     .action-link { color: var(--accent); text-decoration: none; font-weight: 600; }
     .action-link:hover { text-decoration: underline; }
 
@@ -73,8 +74,47 @@
       border-radius: 8px;
       padding: 1rem 1.15rem;
     }
-    .summary-label { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
-    .summary-value { font-family: 'DM Mono', monospace; font-size: 26px; }
+    .summary-label { font-size: 11.5px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+    .summary-value { font-family: 'DM Mono', monospace; font-size: 28px; }
+    .risk-overview {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem 1.2rem 1.2rem;
+      margin-bottom: 1.25rem;
+    }
+    .risk-overview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+      margin-bottom: 0.85rem;
+    }
+    .risk-overview h2 { font-size: 18px; margin-bottom: 0.2rem; }
+    .risk-overview p { color: var(--muted); font-size: 13px; }
+    .mix-bar {
+      display: flex;
+      height: 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #ece8e0;
+      margin-bottom: 0.8rem;
+    }
+    .mix-high { background: linear-gradient(90deg, #d58c68 0%, #b85c3a 100%); }
+    .mix-low { background: linear-gradient(90deg, #9cc5b1 0%, #4a8a70 100%); }
+    .mix-legend {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+    .mix-metric {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 0.95rem;
+    }
+    .mix-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); margin-bottom: 0.25rem; }
+    .mix-value { font-family: 'DM Mono', monospace; font-size: 18px; }
 
     .board, .table-card {
       background: var(--surface);
@@ -123,8 +163,8 @@
       font-size: 13px;
     }
     .priority-title { font-weight: 600; margin-bottom: 0.15rem; }
-    .priority-sub { color: var(--muted); font-size: 12px; }
-    .priority-note { color: var(--muted); font-size: 12px; margin-top: 0.2rem; max-width: 360px; }
+    .priority-sub { color: var(--muted); font-size: 13px; }
+    .priority-note { color: var(--muted); font-size: 13px; margin-top: 0.2rem; max-width: 360px; }
     .priority-right { text-align: right; }
     .priority-prob { font-family: 'DM Mono', monospace; font-size: 19px; margin-bottom: 0.25rem; }
 
@@ -134,18 +174,18 @@
       border-bottom: 1px solid var(--border);
       text-align: left;
       vertical-align: top;
-      font-size: 13px;
+      font-size: 14px;
     }
     th {
       background: var(--bg);
-      font-size: 11px;
+      font-size: 11.5px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--faint);
     }
     tr:last-child td { border-bottom: none; }
     .employee-name { font-weight: 600; }
-    .employee-meta { color: var(--muted); font-size: 12px; }
+    .employee-meta { color: var(--muted); font-size: 13px; }
     .pill {
       display: inline-block;
       font-family: 'DM Mono', monospace;
@@ -159,7 +199,50 @@
     .pill.critical, .pill.high { color: var(--warn); background: var(--warn-lt); border-color: #e0b8a8; }
     .pill.medium { color: #8b6a17; background: #f8f0d7; border-color: #e7d7a8; }
     .pill.low { color: var(--ok); background: var(--ok-lt); border-color: #a8c9b8; }
-    .risk-list, .shap-list { display: flex; flex-direction: column; gap: 0.25rem; color: var(--muted); }
+    .risk-list, .shap-list { display: flex; flex-direction: column; gap: 0.3rem; color: var(--muted); }
+    .band {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 0.45rem;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .band-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .band.high { color: var(--warn); }
+    .band.warn, .band.mid { color: #b9992b; }
+    .band.low { color: var(--ok); }
+
+    @media (max-width: 980px) {
+      .summary-grid,
+      .mix-legend {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        height: auto;
+        padding: 0.85rem 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7rem;
+      }
+      .summary-grid,
+      .mix-legend {
+        grid-template-columns: 1fr;
+      }
+      .page { padding: 1.5rem 1rem 2rem; }
+    }
     .risk-list span::before { content: "- "; }
     .shap-list span::before { content: "* "; }
   </style>
@@ -206,6 +289,33 @@
     </div>
   </div>
 
+  <div class="risk-overview">
+    <div class="risk-overview-head">
+      <div>
+        <h2>Risk Mix Overview</h2>
+        <p>Quick visual split of the uploaded group so HR can spot where attention is needed first.</p>
+      </div>
+    </div>
+    <div class="mix-bar">
+      <div class="mix-high" style="width: {{ summary.high_risk_pct }}%"></div>
+      <div class="mix-low" style="width: {{ summary.low_risk_pct }}%"></div>
+    </div>
+    <div class="mix-legend">
+      <div class="mix-metric">
+        <div class="mix-label">High Risk Share</div>
+        <div class="mix-value">{{ summary.high_risk_pct }}%</div>
+      </div>
+      <div class="mix-metric">
+        <div class="mix-label">Lower Risk Share</div>
+        <div class="mix-value">{{ summary.low_risk_pct }}%</div>
+      </div>
+      <div class="mix-metric">
+        <div class="mix-label">Average Attrition Risk</div>
+        <div class="mix-value">{{ summary.avg_probability }}%</div>
+      </div>
+    </div>
+  </div>
+
   <div class="board">
     <div class="section-head">
       <span class="section-tag">QUEUE</span>
@@ -218,6 +328,7 @@
         <div>
           <div class="priority-title">{{ item.employee_name }}</div>
           <div class="priority-sub">{{ item.department }} · {{ item.job_role }}</div>
+          <div class="band {{ item.risk_band_tone }}"><span class="band-dot"></span>{{ item.risk_band_label }} risk band</div>
           <div class="priority-note">{{ item.priority_note }}</div>
         </div>
         <div class="priority-right">
@@ -254,6 +365,7 @@
           </td>
           <td>
             <span class="pill {{ item.priority_label|lower }}">{{ item.priority_label }}</span>
+            <div class="band {{ item.risk_band_tone }}"><span class="band-dot"></span>{{ item.risk_band_label }}</div>
           </td>
           <td>{{ item.probability }}%</td>
           <td>

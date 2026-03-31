@@ -102,6 +102,16 @@ def priority_details(probability):
     return 'Low', 'No urgent intervention required. Continue routine engagement.'
 
 
+def risk_band(probability):
+    if probability >= 65:
+        return 'Severe', 'high'
+    if probability >= 45:
+        return 'Elevated', 'warn'
+    if probability >= 25:
+        return 'Watchlist', 'mid'
+    return 'Stable', 'low'
+
+
 def build_raw_input(source):
     return {
         'Age': int(source.get('Age', 30)),
@@ -201,6 +211,8 @@ def process_batch_upload(uploaded_file):
             'priority_rank': 0,
             'priority_label': priority_label,
             'priority_note': priority_note,
+            'risk_band_label': risk_band(probability)[0],
+            'risk_band_tone': risk_band(probability)[1],
             'employee_name': employee_name,
             'department': raw['Department'],
             'job_role': raw['JobRole'],
@@ -221,14 +233,19 @@ def process_batch_upload(uploaded_file):
 
     high_risk_count = sum(1 for result in results if result['will_leave'])
     avg_probability = round(sum(result['probability'] for result in results) / len(results), 1)
+    total_employees = len(results)
+    high_risk_pct = round((high_risk_count / total_employees) * 100, 1)
+    low_risk_pct = round(100 - high_risk_pct, 1)
 
     return {
         'top_priority': results[:5],
         'results': results,
         'summary': {
-            'total_employees': len(results),
+            'total_employees': total_employees,
             'high_risk_count': high_risk_count,
-            'low_risk_count': len(results) - high_risk_count,
+            'low_risk_count': total_employees - high_risk_count,
+            'high_risk_pct': high_risk_pct,
+            'low_risk_pct': low_risk_pct,
             'avg_probability': avg_probability,
         },
     }
@@ -271,6 +288,8 @@ def index(request):
             'risk_factors': risks,
             'priority_label': priority_label,
             'priority_note': priority_note,
+            'risk_band_label': risk_band(probability)[0],
+            'risk_band_tone': risk_band(probability)[1],
             'shap_explanations': shap_explanations,
             'shap_notice': shap_notice,
             'employee_name': request.POST.get('EmployeeName', 'Employee'),

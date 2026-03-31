@@ -28,7 +28,7 @@
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-size: 14px;
+      font-size: 15px;
       line-height: 1.6;
       min-height: 100vh;
     }
@@ -42,7 +42,7 @@
     .topbar-left { display: flex; align-items: center; gap: 1.5rem; }
     .topbar-logo { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: #fff; letter-spacing: 0.05em; text-decoration: none; }
     .topbar-sep { width: 1px; height: 18px; background: #3a3835; }
-    .topbar-title { font-size: 13px; color: #9c9890; }
+    .topbar-title { font-size: 14px; color: #9c9890; }
     .topbar-nav { display: flex; align-items: center; gap: 0.75rem; }
     .topbar-link {
       color: #d7d3ca;
@@ -98,7 +98,7 @@
     .verdict-banner.stay  .verdict-label { color: #2a6048; }
 
     .verdict-name {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 600;
       letter-spacing: -0.02em;
       color: var(--text);
@@ -122,7 +122,7 @@
     .prob-bar-fill { height: 100%; border-radius: 3px; }
     .verdict-banner.leave .prob-bar-fill { background: #b85c3a; }
     .verdict-banner.stay  .prob-bar-fill { background: #4a8a70; }
-    .prob-caption { font-size: 10.5px; color: var(--faint); font-style: italic; }
+    .prob-caption { font-size: 11.5px; color: var(--faint); font-style: italic; }
     .priority-strip {
       margin-top: 0.85rem;
       display: inline-flex;
@@ -130,6 +130,43 @@
       gap: 0.7rem;
       flex-wrap: wrap;
     }
+    .insight-band {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin: 0 0 1.4rem;
+    }
+    .insight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+    }
+    .insight-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--faint);
+      margin-bottom: 0.3rem;
+    }
+    .insight-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 19px;
+      margin-bottom: 0.25rem;
+    }
+    .insight-note { color: var(--muted); font-size: 13px; }
+    .insight-meter {
+      height: 10px;
+      border-radius: 999px;
+      background: #ece8e0;
+      overflow: hidden;
+      margin-top: 0.55rem;
+    }
+    .insight-meter-fill { height: 100%; border-radius: 999px; }
+    .insight-meter-fill.high { background: linear-gradient(90deg, #d58c68 0%, #b85c3a 100%); }
+    .insight-meter-fill.warn { background: linear-gradient(90deg, #ead48d 0%, #c4a43a 100%); }
+    .insight-meter-fill.mid { background: linear-gradient(90deg, #e7d9a7 0%, #b9992b 100%); }
+    .insight-meter-fill.low { background: linear-gradient(90deg, #9cc5b1 0%, #4a8a70 100%); }
     .priority-pill {
       display: inline-block;
       font-family: 'DM Mono', monospace;
@@ -181,7 +218,7 @@
     }
     .card-header h3 { font-size: 12.5px; font-weight: 600; color: var(--text); }
 
-    .card-body { padding: 1.4rem; }
+    .card-body { padding: 1.5rem; }
 
     /* ── RISK FACTORS ── */
     .factor-list { display: flex; flex-direction: column; gap: 0.6rem; }
@@ -259,18 +296,18 @@
       display: flex; justify-content: space-between; align-items: baseline;
       padding: 6px 0;
       border-bottom: 1px solid var(--border);
-      font-size: 12.5px;
+      font-size: 13.5px;
     }
     .profile-row:last-child { border-bottom: none; }
     .profile-key { color: var(--muted); }
-    .profile-val { font-weight: 500; font-family: 'DM Mono', monospace; font-size: 12px; }
+    .profile-val { font-weight: 500; font-family: 'DM Mono', monospace; font-size: 13px; }
     .profile-val.flag { color: var(--warn); }
 
     /* ── CONFIDENCE BREAKDOWN ── */
     .conf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
     .conf-cell { background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 0.65rem 0.85rem; }
-    .conf-label { font-size: 10.5px; color: var(--faint); margin-bottom: 2px; }
-    .conf-val { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--text); }
+    .conf-label { font-size: 11px; color: var(--faint); margin-bottom: 2px; }
+    .conf-val { font-family: 'DM Mono', monospace; font-size: 17px; font-weight: 500; color: var(--text); }
 
     /* ── ACTIONS ── */
     .actions {
@@ -292,6 +329,30 @@
       cursor: pointer; transition: border-color 0.15s, color 0.15s;
     }
     .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+
+    @media (max-width: 980px) {
+      .verdict-banner,
+      .result-grid,
+      .insight-band {
+        grid-template-columns: 1fr;
+      }
+      .prob-block { text-align: left; }
+    }
+
+    @media (max-width: 720px) {
+      .page { padding: 1.5rem 1rem 2rem; }
+      .topbar {
+        height: auto;
+        padding: 0.85rem 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7rem;
+      }
+      .topbar-left, .topbar-nav, .actions, .conf-grid {
+        flex-wrap: wrap;
+      }
+      .conf-grid { grid-template-columns: 1fr; }
+    }
 
     .footer {
       border-top: 1px solid var(--border); padding: 0.9rem 2rem;
@@ -347,6 +408,30 @@
         <div class="prob-bar-fill" style="width:{{ probability }}%"></div>
       </div>
       <div class="prob-caption">attrition probability</div>
+    </div>
+  </div>
+
+  <div class="insight-band">
+    <div class="insight-card">
+      <div class="insight-label">Risk Category</div>
+      <div class="insight-value">{{ risk_band_label }}</div>
+      <div class="insight-note">{{ priority_note }}</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">Risk Level</div>
+      <div class="insight-value">{{ probability }}%</div>
+      <div class="insight-note">Likelihood of this employee leaving based on the current profile.</div>
+      <div class="insight-meter">
+        <div class="insight-meter-fill {{ risk_band_tone }}" style="width: {{ probability }}%"></div>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">Retention Outlook</div>
+      <div class="insight-value">{{ retention_probability }}%</div>
+      <div class="insight-note">Estimated probability that the employee stays under current conditions.</div>
+      <div class="insight-meter">
+        <div class="insight-meter-fill low" style="width: {{ retention_probability }}%"></div>
+      </div>
     </div>
   </div>
 
