@@ -1,10 +1,15 @@
-import joblib, numpy as np, os
+import os
+
+import joblib
+import numpy as np
 from django.shortcuts import render
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL = joblib.load(os.path.join(BASE, 'ml_model', 'attrition_model.pkl'))
-ENCODERS = joblib.load(os.path.join(BASE, 'ml_model', 'label_encoders.pkl'))
-FEATURES = joblib.load(os.path.join(BASE, 'ml_model', 'feature_columns.pkl'))
+
+MODEL = None
+ENCODERS = None
+FEATURES = None
+MODEL_LOAD_ERROR = None
 
 CHOICES = {
     'Gender': ['Male', 'Female'],
@@ -16,16 +21,31 @@ CHOICES = {
     'OverTime': ['No', 'Yes'],
 }
 
-RISK_MAP = {
-    'OverTime': ('Yes', 'Working overtime significantly increases attrition risk.'),
-    'MonthlyIncome': (4000, 'Lower income is a key driver of employee departure.'),
-    'Age': (30, 'Younger employees tend to have higher attrition rates.'),
-    'YearsAtCompany': (3, 'Employees in first 2 years are at higher risk.'),
-    'JobSatisfaction': (2, 'Low job satisfaction strongly predicts attrition.'),
-    'DistanceFromHome': (20, 'Long commutes increase the likelihood of leaving.'),
-}
+
+def load_model_artifacts():
+    global MODEL, ENCODERS, FEATURES, MODEL_LOAD_ERROR
+
+    if MODEL is not None and ENCODERS is not None and FEATURES is not None:
+        return True
+    if MODEL_LOAD_ERROR is not None:
+        return False
+
+    try:
+        MODEL = joblib.load(os.path.join(BASE, 'ml_model', 'attrition_model.pkl'))
+        ENCODERS = joblib.load(os.path.join(BASE, 'ml_model', 'label_encoders.pkl'))
+        FEATURES = joblib.load(os.path.join(BASE, 'ml_model', 'feature_columns.pkl'))
+        return True
+    except Exception as exc:
+        MODEL_LOAD_ERROR = str(exc)
+        return False
 
 def index(request):
+    if not load_model_artifacts():
+        return render(request, 'predictor/index.html', {
+            'choices': CHOICES,
+            'error': 'Model files are missing or could not be loaded. Add the files in ml_model/ and ensure all dependencies are installed before running predictions.',
+        })
+
     if request.method == 'POST':
         raw = {
             'Age': int(request.POST.get('Age', 30)),
