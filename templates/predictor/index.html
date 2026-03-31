@@ -314,12 +314,20 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: var(--accent);
+      background: linear-gradient(135deg, #20c05c 0%, #13a84a 100%);
       color: #fff;
       padding: 9px 14px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 600;
+      box-shadow: 0 10px 24px rgba(19, 168, 74, 0.28);
+      transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    }
+    .dropzone:hover .dropzone-cta,
+    .dropzone:focus-visible .dropzone-cta {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(19, 168, 74, 0.34);
+      filter: saturate(1.08);
     }
     .file-input-hidden {
       position: absolute;
