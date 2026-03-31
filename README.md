@@ -150,8 +150,3 @@ Inference from Vercel's Functions docs: Vercel recommends persisting writes to o
 - The default database is SQLite.
 - `db.sqlite3` is ignored by Git and is not committed.
 - The current Django settings file has `DEBUG = True` and `ALLOWED_HOSTS = ['*']`, which should be tightened before production use.
-
-## Author
-
-Varad Vijay Hajare  
-AISSMS College of Engineering, Pune
