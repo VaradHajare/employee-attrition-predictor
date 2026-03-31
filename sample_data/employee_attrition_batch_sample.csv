@@ -1,0 +1,4 @@
+EmployeeName,Age,Gender,Department,JobRole,BusinessTravel,EducationField,MaritalStatus,OverTime,MonthlyIncome,JobSatisfaction,EnvironmentSatisfaction,WorkLifeBalance,YearsAtCompany,YearsInCurrentRole,YearsSinceLastPromotion,NumCompaniesWorked,DistanceFromHome,PercentSalaryHike,TrainingTimesLastYear,JobLevel
+Anita Sharma,29,Female,Sales,Sales Executive,Travel_Frequently,Marketing,Single,Yes,3600,2,2,2,2,1,0,3,24,13,2,2
+Rahul Mehta,41,Male,Research & Development,Research Scientist,Travel_Rarely,Life Sciences,Married,No,8200,4,4,3,9,6,2,2,7,15,3,3
+Priya Nair,33,Female,Human Resources,Human Resources,Non-Travel,Technical Degree,Single,No,5400,3,3,4,4,2,1,1,12,14,4,2
