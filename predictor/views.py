@@ -3,6 +3,7 @@ from decimal import Decimal
 
 import joblib
 import numpy as np
+from django.db.utils import OperationalError, ProgrammingError
 from django.shortcuts import get_object_or_404, render
 
 from .models import EmployeePrediction
@@ -159,12 +160,21 @@ def build_result_context(record):
     }
 
 
+def safe_recent_predictions(limit=5):
+    try:
+        return list(EmployeePrediction.objects.all()[:limit]), None
+    except (OperationalError, ProgrammingError):
+        return [], 'Prediction history is temporarily unavailable until the database migration finishes.'
+
+
 def index(request):
     if request.method == 'POST':
         if not load_model_artifacts():
+            recent_predictions, db_notice = safe_recent_predictions()
             return render(request, 'predictor/index.html', {
                 'choices': CHOICES,
-                'recent_predictions': EmployeePrediction.objects.all()[:5],
+                'recent_predictions': recent_predictions,
+                'db_notice': db_notice,
                 'error': 'Model files are missing or could not be loaded. Add the files in ml_model/ and ensure all dependencies are installed before running predictions.',
             })
 
@@ -175,22 +185,35 @@ def index(request):
         record = save_prediction(employee_name, raw, prediction, probability, risk_factors)
         return render(request, 'predictor/result.html', build_result_context(record))
 
+    recent_predictions, db_notice = safe_recent_predictions()
     return render(request, 'predictor/index.html', {
         'choices': CHOICES,
-        'recent_predictions': EmployeePrediction.objects.all()[:5],
+        'recent_predictions': recent_predictions,
+        'db_notice': db_notice,
     })
 
 
 def history(request):
-    predictions = EmployeePrediction.objects.all()
-    summary = {
-        'total': predictions.count(),
-        'high_risk': predictions.filter(prediction=1).count(),
-        'low_risk': predictions.filter(prediction=0).count(),
-    }
+    try:
+        predictions = list(EmployeePrediction.objects.all())
+        summary = {
+            'total': len(predictions),
+            'high_risk': sum(1 for item in predictions if item.prediction == 1),
+            'low_risk': sum(1 for item in predictions if item.prediction == 0),
+        }
+        db_notice = None
+    except (OperationalError, ProgrammingError):
+        predictions = []
+        summary = {
+            'total': 0,
+            'high_risk': 0,
+            'low_risk': 0,
+        }
+        db_notice = 'History is unavailable because the database schema has not been applied yet.'
     return render(request, 'predictor/history.html', {
         'predictions': predictions,
         'summary': summary,
+        'db_notice': db_notice,
     })
 
 

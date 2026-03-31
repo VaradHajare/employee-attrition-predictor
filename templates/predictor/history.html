@@ -177,7 +177,9 @@
   </div>
 
   <div class="history-card">
-    {% if predictions %}
+    {% if db_notice %}
+    <div class="empty">{{ db_notice }}</div>
+    {% elif predictions %}
     <table class="history-table">
       <thead>
         <tr>

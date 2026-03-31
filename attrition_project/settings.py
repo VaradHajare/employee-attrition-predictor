@@ -42,7 +42,7 @@ def database_config_from_url(database_url):
 
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-varad-attrition-2026-mazeqube-internship')
-DEBUG = env_bool('DEBUG', default=True)
+DEBUG = env_bool('DEBUG', default=False)
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.railway.app').split(',')
