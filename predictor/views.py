@@ -266,6 +266,7 @@ def index(request):
         return render(request, 'predictor/result.html', {
             'prediction': prediction,
             'probability': probability,
+            'retention_probability': round(100 - probability, 1),
             'will_leave': prediction == 1,
             'risk_factors': risks,
             'priority_label': priority_label,
