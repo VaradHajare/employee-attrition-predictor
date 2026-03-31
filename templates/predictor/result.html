@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Result — MazeQube HR Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #f5f4f0;
+      --surface:   #fdfcfa;
+      --border:    #ddd9d0;
+      --border-md: #ccc8be;
+      --text:      #1c1a17;
+      --muted:     #6b6760;
+      --faint:     #a09d97;
+      --accent:    #2c4a3e;
+      --accent-lt: #e8ede9;
+      --warn:      #7a3928;
+      --warn-lt:   #f5ece8;
+      --ok:        #1e4d38;
+      --ok-lt:     #eaf2ee;
+      --tag-bg:    #eceae4;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--text);
+      color: #e8e6e0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 52px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 1.5rem; }
+    .topbar-logo { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: #fff; letter-spacing: 0.05em; }
+    .topbar-sep { width: 1px; height: 18px; background: #3a3835; }
+    .topbar-title { font-size: 13px; color: #9c9890; }
+    .topbar-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: #2c4a3e; color: #a8c5bb; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.04em; }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 920px; margin: 0 auto; padding: 2.5rem 2rem 3rem; }
+
+    /* ── BREADCRUMB ── */
+    .breadcrumb {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 12px; color: var(--faint); margin-bottom: 1.75rem;
+    }
+    .breadcrumb a { color: var(--muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--text); }
+    .breadcrumb-sep { color: var(--border-md); }
+
+    /* ── VERDICT BANNER ── */
+    .verdict-banner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem 2.25rem;
+      border-radius: 8px;
+      border: 1px solid;
+      margin-bottom: 1.5rem;
+    }
+    .verdict-banner.leave {
+      background: var(--warn-lt);
+      border-color: #d4a898;
+    }
+    .verdict-banner.stay {
+      background: var(--ok-lt);
+      border-color: #a8c9b8;
+    }
+
+    .verdict-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+    .verdict-banner.leave .verdict-label { color: #a04a2e; }
+    .verdict-banner.stay  .verdict-label { color: #2a6048; }
+
+    .verdict-name {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .verdict-sub { font-size: 13.5px; color: var(--muted); }
+
+    /* probability meter */
+    .prob-block { text-align: right; min-width: 140px; }
+    .prob-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 42px;
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .verdict-banner.leave .prob-number { color: var(--warn); }
+    .verdict-banner.stay  .prob-number { color: var(--ok); }
+
+    .prob-bar-wrap { height: 5px; background: rgba(0,0,0,0.08); border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
+    .prob-bar-fill { height: 100%; border-radius: 3px; }
+    .verdict-banner.leave .prob-bar-fill { background: #b85c3a; }
+    .verdict-banner.stay  .prob-bar-fill { background: #4a8a70; }
+    .prob-caption { font-size: 10.5px; color: var(--faint); font-style: italic; }
+
+    /* ── MAIN GRID ── */
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .card:last-child { margin-bottom: 0; }
+
+    .card-header {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.7rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .card-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--faint);
+      background: var(--tag-bg);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .card-header h3 { font-size: 12.5px; font-weight: 600; color: var(--text); }
+
+    .card-body { padding: 1.4rem; }
+
+    /* ── RISK FACTORS ── */
+    .factor-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .factor-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 5px;
+      border-left: 3px solid;
+      font-size: 13px;
+    }
+    .factor-item.negative { background: #fef7f4; border-left-color: #c47058; }
+    .factor-item.positive { background: #f2f9f5; border-left-color: #5a9478; }
+    .factor-item.neutral  { background: var(--bg);  border-left-color: var(--border-md); }
+
+    .factor-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+    }
+    .factor-item.negative .factor-dot { background: #c47058; }
+    .factor-item.positive .factor-dot { background: #5a9478; }
+    .factor-item.neutral  .factor-dot { background: var(--faint); }
+
+    .factor-text { color: var(--text); line-height: 1.5; }
+
+    .no-factors { font-size: 13px; color: var(--muted); font-style: italic; }
+
+    /* ── RECOMMENDATIONS ── */
+    .rec-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .rec-item {
+      display: flex; align-items: flex-start; gap: 0.6rem;
+      font-size: 13px; color: var(--text);
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .rec-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .rec-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--faint);
+      background: var(--tag-bg);
+      padding: 2px 6px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── PROFILE SUMMARY (sidebar card) ── */
+    .profile-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12.5px;
+    }
+    .profile-row:last-child { border-bottom: none; }
+    .profile-key { color: var(--muted); }
+    .profile-val { font-weight: 500; font-family: 'DM Mono', monospace; font-size: 12px; }
+    .profile-val.flag { color: var(--warn); }
+
+    /* ── CONFIDENCE BREAKDOWN ── */
+    .conf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .conf-cell { background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 0.65rem 0.85rem; }
+    .conf-label { font-size: 10.5px; color: var(--faint); margin-bottom: 2px; }
+    .conf-val { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--text); }
+
+    /* ── ACTIONS ── */
+    .actions {
+      display: flex; gap: 0.75rem; align-items: center;
+      padding-top: 1.75rem; border-top: 1px solid var(--border); margin-top: 1.75rem;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff; border: none;
+      padding: 9px 22px; border-radius: 5px;
+      font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 600;
+      cursor: pointer; text-decoration: none; display: inline-block;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #1e3329; }
+    .btn-ghost {
+      background: none; color: var(--muted); border: 1px solid var(--border-md);
+      padding: 8px 18px; border-radius: 5px;
+      font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500;
+      cursor: pointer; transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+
+    .footer {
+      border-top: 1px solid var(--border); padding: 0.9rem 2rem;
+      font-size: 11px; color: var(--faint);
+      display: flex; justify-content: space-between; background: var(--surface);
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-logo">MAZEQUBE</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-title">HR Analytics — Prediction Result</span>
+  </div>
+  <span class="topbar-badge">RF · v1.0</span>
+</div>
+
+<div class="page">
+
+  <div class="breadcrumb">
+    <a href="/">Predictor</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Result — {{ employee_name }}</span>
+  </div>
+
+  <!-- VERDICT BANNER -->
+  <div class="verdict-banner {% if will_leave %}leave{% else %}stay{% endif %}">
+    <div>
+      <div class="verdict-label">
+        {% if will_leave %}Attrition Risk — High{% else %}Attrition Risk — Low{% endif %}
+      </div>
+      <div class="verdict-name">{{ employee_name }}</div>
+      <div class="verdict-sub">
+        {% if will_leave %}
+          This employee is likely to leave. Immediate HR review recommended.
+        {% else %}
+          This employee is likely to remain. Continue standard engagement practices.
+        {% endif %}
+      </div>
+    </div>
+    <div class="prob-block">
+      <div class="prob-number">{{ probability }}<span style="font-size:20px;opacity:0.6;">%</span></div>
+      <div class="prob-bar-wrap">
+        <div class="prob-bar-fill" style="width:{{ probability }}%"></div>
+      </div>
+      <div class="prob-caption">attrition probability</div>
+    </div>
+  </div>
+
+  <!-- MAIN RESULT GRID -->
+  <div class="result-grid">
+
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <!-- Risk Factors -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">ANALYSIS</span>
+          <h3>{% if will_leave %}Contributing Risk Factors{% else %}Retention Indicators{% endif %}</h3>
+        </div>
+        <div class="card-body">
+          <div class="factor-list">
+            {% if risk_factors %}
+              {% for factor in risk_factors %}
+              <div class="factor-item {% if will_leave %}negative{% else %}positive{% endif %}">
+                <span class="factor-dot"></span>
+                <span class="factor-text">{{ factor }}</span>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="factor-item neutral">
+                <span class="factor-dot"></span>
+                <span class="factor-text no-factors">No significant risk signals detected in this employee's profile.</span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- HR Recommendations (only if leaving) -->
+      {% if will_leave %}
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">HR ACTION</span>
+          <h3>Recommended Interventions</h3>
+        </div>
+        <div class="card-body">
+          <div class="rec-list">
+            <div class="rec-item">
+              <span class="rec-num">01</span>
+              <span>Schedule a confidential one-on-one to understand the employee's concerns and career expectations.</span>
+            </div>
+            <div class="rec-item">
+              <span class="rec-num">02</span>
+              <span>Review compensation against market benchmarks. A structured salary revision may significantly reduce flight risk.</span>
+            </div>
+            <div class="rec-item">
+              <span class="rec-num">03</span>
+              <span>Evaluate workload and overtime patterns. Unsustainable hours are one of the strongest predictors of attrition.</span>
+            </div>
+            <div class="rec-item">
+              <span class="rec-num">04</span>
+              <span>Create a visible career growth roadmap with clear promotion timelines and skill development opportunities.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="actions">
+        <a href="/" class="btn-primary">← New Prediction</a>
+        <button onclick="window.print()" class="btn-ghost">Print Report</button>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+
+      <!-- Employee Profile -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">PROFILE</span>
+          <h3>Employee Summary</h3>
+        </div>
+        <div class="card-body">
+          <div class="profile-row">
+            <span class="profile-key">Age</span>
+            <span class="profile-val">{{ form_data.Age }} yrs</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Department</span>
+            <span class="profile-val" style="font-family:'DM Sans';font-size:12px;">{{ form_data.Department }}</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Job Role</span>
+            <span class="profile-val" style="font-family:'DM Sans';font-size:11.5px;text-align:right;max-width:160px;">{{ form_data.JobRole }}</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Monthly Income</span>
+            <span class="profile-val {% if form_data.MonthlyIncome < 4000 %}flag{% endif %}">₹{{ form_data.MonthlyIncome }}</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">OverTime</span>
+            <span class="profile-val {% if form_data.OverTime == 'Yes' %}flag{% endif %}">{{ form_data.OverTime }}</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Years at Company</span>
+            <span class="profile-val">{{ form_data.YearsAtCompany }}</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Job Satisfaction</span>
+            <span class="profile-val {% if form_data.JobSatisfaction <= 2 %}flag{% endif %}">{{ form_data.JobSatisfaction }} / 4</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Work-Life Balance</span>
+            <span class="profile-val">{{ form_data.WorkLifeBalance }} / 4</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Distance From Home</span>
+            <span class="profile-val">{{ form_data.DistanceFromHome }} km</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Marital Status</span>
+            <span class="profile-val" style="font-family:'DM Sans';">{{ form_data.MaritalStatus }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model Confidence -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">MODEL</span>
+          <h3>Confidence Breakdown</h3>
+        </div>
+        <div class="card-body">
+          <div class="conf-grid">
+            <div class="conf-cell">
+              <div class="conf-label">Attrition Prob.</div>
+              <div class="conf-val">{{ probability }}%</div>
+            </div>
+            <div class="conf-cell">
+              <div class="conf-label">Retention Prob.</div>
+              <div class="conf-val">{% widthratio probability 1 1 as p %}{{ 100|add:"-"|add:probability }}%</div>
+            </div>
+            <div class="conf-cell">
+              <div class="conf-label">Algorithm</div>
+              <div class="conf-val" style="font-size:11px;padding-top:2px;">Rand. Forest</div>
+            </div>
+            <div class="conf-cell">
+              <div class="conf-label">Model Accuracy</div>
+              <div class="conf-val">88.4%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <span>Employee Attrition Prediction System · MazeQube Internship · Varad Vijay Hajare, AISSMS COE Pune</span>
+  <span>AY 2025–26</span>
+</div>
+
+</body>
+</html>
