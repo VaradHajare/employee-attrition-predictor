@@ -334,8 +334,8 @@
             <div class="field"><label>Employee Name</label><input type="text" name="EmployeeName" placeholder="Full name" required></div>
             <div class="field"><label>Age</label><input type="number" name="Age" min="18" max="65" value="30" required></div>
             <div class="field"><label>Gender</label><select name="Gender">{% for o in choices.Gender %}<option>{{ o }}</option>{% endfor %}</select></div>
-            <div class="field"><label>Marital Status</label><select name="MaritalStatus">{% for o in choices.MaritalStatus %}<option>{{ o }}</option>{% endfor %}</select></div>
-            <div class="field"><label>Education Field</label><select name="EducationField">{% for o in choices.EducationField %}<option>{{ o }}</option>{% endfor %}</select></div>
+            <div class="field"><label>Marital Status</label><select name="MaritalStatus">{% for o in choices.MaritalStatus %}<option {% if o == 'Single' %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></div>
+            <div class="field"><label>Education Field</label><select name="EducationField">{% for o in choices.EducationField %}<option {% if o == 'Technical Degree' %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></div>
             <div class="field"><label>Distance From Home (km)</label><input type="number" name="DistanceFromHome" min="1" max="100" value="10"></div>
           </div>
         </div>
