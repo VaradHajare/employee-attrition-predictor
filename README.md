@@ -1,5 +1,7 @@
 # Employee Attrition Predictor
-<img width="575" height="807" alt="image" src="https://github.com/user-attachments/assets/c7ce89cc-3c61-420e-9d2f-5b4cb80f33a4" />
+<div style="text-align: center;">
+  <img width="575" height="807" alt="image" src="https://github.com/user-attachments/assets/c7ce89cc-3c61-420e-9d2f-5b4cb80f33a4" />
+</div>   
 
 A Django-based web application that predicts whether an employee is likely to leave the company based on HR and workplace attributes made for my internship at MazeQube Software Technologies Pvt. Ltd.
 
